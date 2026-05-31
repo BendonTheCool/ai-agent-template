@@ -17,6 +17,22 @@ def valuation_calculator(location: str, sq_ft: int, bedrooms: int, bathrooms: fl
     Returns:
         Dictionary with predicted_price (float in USD)
     """
+    # Input validation - handle cases where LLM sends lists instead of single values
+    if isinstance(bedrooms, list):
+        bedrooms = bedrooms[0] if bedrooms else 3
+    if isinstance(bathrooms, list):
+        bathrooms = bathrooms[0] if bathrooms else 2.0
+    if isinstance(sq_ft, list):
+        sq_ft = sq_ft[0] if sq_ft else 1500
+    if isinstance(location, list):
+        location = location[0] if location else "90210"
+    
+    # Convert to proper types
+    bedrooms = int(bedrooms)
+    bathrooms = float(bathrooms)
+    sq_ft = int(sq_ft)
+    location = str(location)
+    
     # Store current property in state for context awareness
     property_data = {
         "location": location,
@@ -77,6 +93,11 @@ def market_trend_analyzer(zip_code: str):
     Returns:
         Dictionary with avg_price_per_sqft and year_over_year_growth_pct
     """
+    # Input validation - handle lists
+    if isinstance(zip_code, list):
+        zip_code = zip_code[0] if zip_code else "90210"
+    zip_code = str(zip_code)
+    
     # Check cache first
     if zip_code in STATE["market_data_cache"]:
         return STATE["market_data_cache"][zip_code]
@@ -115,6 +136,11 @@ def set_budget_constraint(max_price: float):
     Returns:
         Confirmation message
     """
+    # Input validation - handle lists
+    if isinstance(max_price, list):
+        max_price = max_price[0] if max_price else 2000000
+    max_price = float(max_price)
+    
     STATE["budget_constraint"] = max_price
     return f"Budget constraint set to ${max_price:,.2f}. I'll alert you if properties exceed this limit."
 
@@ -129,6 +155,11 @@ def check_budget(price: float):
     Returns:
         Dictionary with budget_check result
     """
+    # Input validation - handle lists
+    if isinstance(price, list):
+        price = price[0] if price else 0
+    price = float(price)
+    
     if STATE["budget_constraint"] is None:
         return {"within_budget": True, "message": "No budget constraint set"}
     
